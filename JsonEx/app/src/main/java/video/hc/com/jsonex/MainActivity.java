@@ -12,18 +12,23 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import video.hc.com.jsonex.enity.Book;
+import video.hc.com.jsonex.enity.Weather;
 import video.hc.com.jsonex.observer.MyObservable;
 import video.hc.com.jsonex.observer.MyObserver;
 import video.hc.com.jsonex.upload.StringListenerThread;
@@ -44,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
     private StringListenerThread stringLisener;
     private MyObserver myObserver;
     private MyObservable myObservable;
-
+    List<Weather> weatherList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
             @Override
             public void run() {
                 sleep(500);
-                Book bookInfo = JsonUtils.getIncetence().beginGson(updataTask.getData(), Book.class);
+                Book bookInfo = JsonUtils.getIncetence().beginBookGson(updataTask.getData(), Book.class);
                 sbString.append("id = " + bookInfo.getId() + "\n");
                 sbString.append("language = " + bookInfo.getLanguage() + "\n");
                 sbString.append("edition = " + bookInfo.getEdition() + "\n");
@@ -227,9 +232,70 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        Log.d("lylog", "propertyChange " + num++);
+        //Log.d("lylog", "propertyChange " + num++);
     }
 
     public void doJsonUp(View view) {
+        bt_jsonUp.setEnabled(false);
+        notifys("解析一个json带二维数组", 1000);
+        notifys("接下来见证奇迹的时刻", 0);
+        notifys("复杂的解析其实是上面两种解析的结合", 0);
+        notifys("--------------------------------", 0);
+
+
+        JsonObject json = JsonUtils.getIncetence().beginJson(updataTask.getData());
+        notifys("获取数据源成功", 0);
+        notifys("获取HeWeather6里面的数据", 1000);
+        JsonArray array = json.getAsJsonArray("HeWeather6");
+
+        notifys("取出HeWeather6里面的数据数组下标为0的数据", 1000);
+        JsonObject jsonArray_0 = (JsonObject) array.get(0);
+
+        notifys("取出HeWeather6里面的数据数组下标为0的数据中的daily_forecast项", 1000);
+        JsonArray jsonWeatherArray = jsonArray_0.getAsJsonArray("daily_forecast");
+
+        weatherList = new ArrayList<>();
+        for (int i = 0; i < jsonWeatherArray.size(); i++) {
+            weatherList.add(JsonUtils.getIncetence().beginWeatherGson((JsonObject) jsonWeatherArray.get(i), Weather.class));
+        }
+
+        notifys("把daily_forecast项的数据储存到list的集合中方便使用", 0);
+        notifys("解析数据开始......ING", 0);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (Weather weather : weatherList) {
+                    notifys("\n", 0);
+                    notifys("weather "+num+++"\n", 0);
+                    notifys("cond_code_d = " + weather.getCond_code_d(), 0);
+                    notifys("cond_code_n = " + weather.getCond_code_n(), 0);
+                    notifys("cond_txt_d = " + weather.getCond_code_d(), 0);
+                    notifys("date = " + weather.getDate(), 0);
+                    notifys("hum = " + weather.getHum(), 0);
+                    notifys("pcpn = " + weather.getPcpn(), 0);
+                    notifys("pop = " + weather.getPop(), 0);
+                    notifys("pres = " + weather.getPres(), 0);
+                    notifys("tmp_max = " + weather.getTmp_max(), 0);
+                    notifys("tmp_min = " + weather.getTmp_min(), 0);
+                    notifys("uv_index = " + weather.getUv_index(), 0);
+                    notifys("vis = " + weather.getVis(), 0);
+                    notifys("wind_deg = " + weather.getWind_deg(), 0);
+                    notifys("wind_dir = " + weather.getWind_dir(), 0);
+                    notifys("wind_sc = " + weather.getWind_sc(), 0);
+                    notifys("wind_spd = " + weather.getWind_spd(), 2000);
+
+                }
+            }
+        }).start();
+
+
+    }
+
+    public void notifys(String msg, int i) {
+        sbString.append(msg + "\n");
+        observerNotify(sbString.toString());
+        if (i != 0) {
+            sleep(i);
+        }
     }
 }

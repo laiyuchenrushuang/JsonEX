@@ -4,7 +4,7 @@ package video.hc.com.jsonex.enity;
  * Created by ly on 2019/6/4.
  */
 
-public class Book extends BaseUsers{
+public class Book extends BaseObjects{
     String id;
     String language;
     String edition;

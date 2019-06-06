@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import video.hc.com.jsonex.enity.Book;
+import video.hc.com.jsonex.enity.Weather;
 
 /**
  * Created by ly on 2019/6/4.
@@ -33,7 +34,12 @@ public class JsonUtils {
         return jsons;
     }
 
-    public Book beginGson(String json, Class<Book> s){
+    public Book beginBookGson(String json, Class<Book> s){
+        Gson gson = new Gson();
+        return gson.fromJson(json,s);
+    }
+
+    public Weather beginWeatherGson(JsonObject json, Class<Weather> s){
         Gson gson = new Gson();
         return gson.fromJson(json,s);
     }
