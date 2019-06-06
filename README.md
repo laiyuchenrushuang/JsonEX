@@ -9,3 +9,4 @@
 3.对观察者模式的理解
 
 ----------------------------
+![lizi](https://github.com/laiyuchenrushuang/JsonEX/blob/master/lizi.png)
